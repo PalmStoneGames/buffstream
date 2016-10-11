@@ -1,12 +1,12 @@
 package buffstream
 
 import (
-	"testing"
-	"io"
-	"sync"
-	"math/rand"
 	"bytes"
+	"io"
+	"math/rand"
 	"net"
+	"sync"
+	"testing"
 )
 
 func testReaderWriter(t *testing.T, r io.ReadCloser, w io.WriteCloser) {
@@ -17,7 +17,6 @@ func testReaderWriter(t *testing.T, r io.ReadCloser, w io.WriteCloser) {
 			t.Fatalf("Error while reading random bytes: %v", err)
 		}
 	}
-
 
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -84,7 +83,6 @@ func TestTCPConn(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error while accepting tcp: %v", err)
 	}
-
 
 	testReaderWriter(t, connListen, connDial)
 	testReaderWriter(t, connDial, connListen)

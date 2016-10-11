@@ -58,32 +58,13 @@ func NewWriter(w io.Writer) *Writer {
 // By default Write is unbuffered, if buffered IO is desirable, the passed in reader can be wrapped with a bufio.Writer
 func (w *Writer) Write(data []byte) (int, error) {
 	headerBytes := binary.PutVarint(w.header[:], int64(len(data)))
-	writtenHeader, err := w.writeFull(w.header[:headerBytes])
+	writtenHeader, err := w.writer.Write(w.header[:headerBytes])
 	if err != nil {
 		return writtenHeader, err
 	}
 
-	writtenBody, err := w.writeFull(data)
+	writtenBody, err := w.writer.Write(data)
 	return writtenHeader + writtenBody, err
-}
-
-func (c *Writer) writeFull(data []byte) (int, error) {
-	var (
-		err               error
-		totalBytesWritten = 0
-		bytesWritten      = 0
-	)
-
-	// First, read the number of bytes required to determine the message length
-	for totalBytesWritten < len(data) && err == nil {
-		// While we haven't read enough yet
-		// If there are remainder bytes, adjust the contents of toWrite
-		// totalBytesWritten will be the index of the nextByte waiting to be read
-		bytesWritten, err = c.writer.Write(data[totalBytesWritten:])
-		totalBytesWritten += bytesWritten
-	}
-
-	return totalBytesWritten, err
 }
 
 func (r *Reader) Read(data []byte) (int, error) {
